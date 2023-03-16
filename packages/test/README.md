@@ -1,0 +1,1 @@
+Do not touch the test example site as it will break the tests.

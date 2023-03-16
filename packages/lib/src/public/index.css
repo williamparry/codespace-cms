@@ -1,0 +1,54 @@
+[contenteditable] {
+	/*
+	So caret doesn't hide when there's an outline
+	padding-left: 1px;
+	*/
+	outline: none;
+}
+
+/*
+TODO: Remove this relative positioning opinion on CMS content
+*/
+.cms-component {
+	position: relative;
+	display: block;
+	border: 1px dashed #000;
+}
+
+.cms-toolbar {
+	transform: translateY(-100%);
+	opacity: 0.2;
+	transition: opacity 0.125s;
+}
+
+.cms-toolbar.active,
+.cms-toolbar:hover {
+	opacity: 1;
+}
+
+.cms-component-span {
+	position: absolute;
+	top: 0;
+	right: 0;
+	transform: translateY(-100%);
+	z-index: 3;
+	display: block;
+	font-size: 11px;
+	opacity: 0.7;
+}
+
+.cms-component-error {
+	position: absolute;
+	font-family: "Courier New", Courier, monospace;
+	top: 0;
+	left: 0;
+	transform: translateY(-100%);
+	color: #fff;
+	background: red;
+	padding: 0 8px;
+	line-height: 1;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 12px;
+	z-index: 3;
+}

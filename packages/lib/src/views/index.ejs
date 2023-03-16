@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="csrf-token" content="<%=csrfToken%>">
+		<title></title>
+		<script src="/cms/lib/jsoneditor.js" nonce="<%= nonce %>"></script>
+		<script type="module" src="/cms/index.js" nonce="<%= nonce %>"></script>
+		<link rel="stylesheet" href="/cms/index.css" />
+	</head>
+	<body>
+		<top-bar id="top-bar" id="top-bar"> </top-bar>
+
+		<div id="page-html"><%- pageHTML %></div>
+		<script nonce="<%= nonce %>">
+			const PAGE_DATA = {
+				components: <%-JSON.stringify(components.map(p => ({
+					FileNameAsTag: p.FileNameAsTag,
+					ServerScript: p.ServerScript ? p.ServerScript.fileName : null,
+					ClientScript: p.ClientScript ? p.ClientScript.fileName : null
+				})))%>,
+				pagesList: <%-JSON.stringify(pagesList)%>,
+				siteAssets: <%-JSON.stringify(siteAssets)%>
+			};
+
+			window.serverScripts = {
+				<%-components.filter(p => p.ServerScript).map(p => `${p.ServerScript.fileName}: ${p.ServerScript.contents}`).join(",")%>
+			};
+
+			window.components = {};
+// Needs to target root el
+			<%-components.filter(p => p.ClientScript).map(p => `
+				Array.from(document.querySelectorAll('${p.FileNameAsTag}')).forEach(p => {
+					window.components[p.id] = ${p.ClientScript.contents.trim()} 
+				})
+			`).join(",") %>
+	
+		</script>
+		<% components.forEach(function(component){ %> <%- component.HTML %> <% }); %>
+	</body>
+</html>

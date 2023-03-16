@@ -1,0 +1,25 @@
+<%- pageHTML %>
+<script class="clear" type="module" src="/cms/view.js" nonce="<%= nonce %>"></script>
+<script class="clear" nonce="<%= nonce %>">
+	const PAGE_DATA = {
+		components: <%-JSON.stringify(components.map(p => ({
+			FileNameAsTag: p.FileNameAsTag,
+			ServerScript: p.ServerScript ? p.ServerScript.fileName : null,
+			ClientScript: p.ClientScript ? p.ClientScript.fileName : null
+		})))%>,
+		pagesList: <%-JSON.stringify(pagesList)%>,
+		siteAssets: <%-JSON.stringify(siteAssets)%>
+	};
+
+	window.serverScripts = {
+		<%-components.filter(p => p.ServerScript).map(p => `${p.ServerScript.fileName}: ${p.ServerScript.contents}`).join(",")%>,
+	};
+</script>
+
+<% components.forEach(function(component){ %> <%- component.HTML %> <% }); %>
+
+<script class="clear" nonce="<%= nonce %>">
+	window.components = {
+		<%-components.filter(p => p.ClientScript).map(p => `${p.ClientScript.fileName}: () => Array.from(document.querySelectorAll('[data-component=${p.FileNameAsTag}]')).forEach(${p.ClientScript.contents})`).join(",")%>
+	}
+</script>

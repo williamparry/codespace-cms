@@ -1,0 +1,31 @@
+<html lang="en">
+	<page-head id="head" title="Home2" stylesheets="/css/home.css"></page-head>
+
+	<body>
+		<h1>node-static-cms v0.0.1-alpha</h1>
+		<p class="hello-world-text">Hello, World!</p>
+		<div id="wrap">
+			<div id="left">
+				<div id="section" class="content-section" data-cloneable>
+					<h2 id="section-subtitle" contenteditable>Subtitle you can edit</h2>
+					<div
+						id="section-content"
+						class="section-content"
+						contenteditable
+						data-toolbar="insertorderedlist,insertunorderedlist,createlink">
+						<p>Content you can edit.</p>
+						<p>Clone this section and notice the re-render of on-this-page</p>
+					</div>
+				</div>
+
+				<h2>Posts</h2>
+				<get-posts id="g" directory="posts" showsnippet="true"></get-posts>
+				<get-posts id="h" directory="posts" showsnippet="false"></get-posts>
+			</div>
+
+			<div id="right">
+				<on-this-page id="o"></on-this-page>
+			</div>
+		</div>
+	</body>
+</html>
