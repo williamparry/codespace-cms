@@ -8,8 +8,8 @@
     "packages/test"
   ],
   "scripts": {
-    "dev": "nodemon packages/lib/src/index.js --siteRoot=example-site --outputRoot=dist --users.admin=nodestaticcms",
-    "dev:generate": "node packages/lib/src/index.js --port=3001 --siteRoot=example-site --outputRoot=dist --generate --users.admin=nodestaticcms",
+    "dev": "nodemon packages/lib/src/index.js --siteRoot=example-site --outputRoot=dist",
+    "dev:generate": "node packages/lib/src/index.js --port=3001 --siteRoot=example-site --outputRoot=dist --generate",
     "dev:distserver": "cd dist && http-server",
     "test": "cd packages/test && node test.js",
     "package": "cd packages/lib && npm pack"

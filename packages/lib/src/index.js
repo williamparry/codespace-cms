@@ -339,7 +339,7 @@ module.exports.cms = (argv) => {
 			BASE_DIR,
 			DIST_DIR,
 			SITE_ASSETS_DIR,
-			"Basic Auth Enabled": !!basicAuthUsers,
+			"Auth": process.env.CODESPACES ? "Codespace" : !!basicAuthUsers ? "Basic Auth" : "Nnone",
 			"Server running at": `http://localhost:${port}`,
 		});
 
@@ -354,7 +354,7 @@ module.exports.cms = (argv) => {
 				});
 				const page = await browser.newPage();
 
-				if (basicAuthUsers) {
+				if (basicAuthUsers && !process.env.CODESPACES) {
 					const basicAuthUserKeys = Object.keys(basicAuthUsers);
 					await page.authenticate({
 						username: basicAuthUserKeys[0],
