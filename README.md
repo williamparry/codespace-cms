@@ -1,10 +1,6 @@
-# node-static-cms
+# codespace-cms
 
-A light filesystem-orientated CMS that uses Puppeteer to generate static HTML pages.
-
-**⚠ Work in progress. This system shows and modifies files on your filesystem. Use at your own risk. You should probably use Docker.**
-
-This project was originally intended to be used for our public website.
+A light filesystem-orientated CMS that uses Puppeteer to generate static HTML pages into a dist folder.
 
 ![System diagram](node-static-cms-diagram.png)
 
@@ -35,7 +31,7 @@ You can use Git for versioning, and the `outputRoot` folder that gets generated 
 - Easy-to-make components with HTML + server-side JS and client-side JS
 - In-place editing, giving you control as to what you'll allow an editor to touch
 
-There is basic auth enabled out-the-box, but you should consider your own auth system.
+There is basic auth enabled out-the-box, but you should use a codespace.
 
 ### Does not have
 
