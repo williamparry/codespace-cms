@@ -5,7 +5,15 @@ class PageHead {
 				type: "string",
 			},
 			stylesheets: {
-				description: "The current page",
+				description: "Stylesheets for the page",
+				type: "array",
+				items: {
+					type: "string",
+				},
+				default: [],
+			},
+			externalscripts: {
+				description: "Scripts for current page",
 				type: "array",
 				items: {
 					type: "string",
@@ -14,7 +22,7 @@ class PageHead {
 			},
 		},
 	};
-	static async render(rootEl, { stylesheets, title }) {
+	static async render(rootEl, { stylesheets, externalscripts, title }) {
 		title = "codespace-cms" + (title ? " : " + title : "");
 		document.title = title;
 		rootEl.querySelector("title").textContent = title;
@@ -23,6 +31,11 @@ class PageHead {
 			link.rel = "stylesheet";
 			link.href = s;
 			rootEl.appendChild(link);
+		});
+		externalscripts.forEach((s) => {
+			const script = document.createElement("script");
+			script.src = s;
+			rootEl.appendChild(script);
 		});
 	}
 }

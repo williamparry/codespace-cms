@@ -1,6 +1,6 @@
 # codespace-cms
 
-A light filesystem-orientated CMS that uses Puppeteer to generate static HTML pages into a dist folder.
+A light filesystem-orientated CMS for GitHub Codespaces that uses Puppeteer to generate static HTML pages into a dist folder.
 
 ![System diagram](node-static-cms-diagram.png)
 
@@ -10,12 +10,30 @@ You can use Git for versioning, and the `outputRoot` folder that gets generated 
 
 ![Screenshot](screenshot.png)
 
-## Using NPM
+## Using the CMS in a Codespace
 
-(TODO)
+    npx @williamparry/codespace-cms --siteRoot=(example-site)
 
-    npm install node-static-cms
-    node-static-cms --siteRoot=(example-site) --outputRoot=(dist) --users.(admin)=(nodestaticcms)
+You can commit and push the files it changes from VS Code.
+
+## Generating the dist
+
+For GitHub pages put this in as the command:
+
+    sudo apt update && sudo apt-get install chromium -y
+    npx @williamparry/codespace-cms --siteRoot=(example-site) --outputRoot=(dist) --generate
+
+To run in your devcontainer, amend your `.devcontainer.json` file:
+
+    "postCreateCommand": "sudo apt update && sudo apt-get install chromium -y"
+
+This will ensure that if you recreate your devcontainer it will automatically download Chromium again. Run the command manually to download now.
+
+## Using locally
+
+⚠ Not advised for security reasons.
+
+    npx @williamparry/codespace-cms --siteRoot=(example-site) --outputRoot=(dist) --users.(admin)=(nodestaticcms)
 
 ## Development
 
@@ -23,6 +41,10 @@ You can use Git for versioning, and the `outputRoot` folder that gets generated 
 
     npm install
     npm run dev (runs on localhost:3000/cms/index.html)
+
+To generate:
+
+    sudo apt update && sudo apt-get install chromium -y # Only needed the first time
     npm run dev:generate (generates pages into dist/)
 
 ## Features
@@ -31,7 +53,7 @@ You can use Git for versioning, and the `outputRoot` folder that gets generated 
 - Easy-to-make components with HTML + server-side JS and client-side JS
 - In-place editing, giving you control as to what you'll allow an editor to touch
 
-There is basic auth enabled out-the-box, but you should use a codespace.
+There is basic auth available out-the-box, but you should use a codespace.
 
 ### Does not have
 
@@ -48,19 +70,21 @@ site structure:
     site-assets         (Static assets go here)
 ```
 
-## Pages
-
-(TODO)
-
-- Must have a `<page-head>`
-- Can use components that are made in the `components` directory automatically
-- Any element that is content managed must have an `id`
-
 ## Components
+
+See: [examples](packages/test/example-site/components)
 
 - Must have a `.html` file
 - Can have a `.server.js` file that will render statically when generating
 - Can have a `.client.js` file that will run on the page like normal
+
+## Pages
+
+See: [examples](packages/test/example-site/content-pages)
+
+- Must have a `<page-head>`
+- Can use components that are made in the `components` directory automatically
+- Any element that is content managed must have an `id`
 
 ## Globals
 

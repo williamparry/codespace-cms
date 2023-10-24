@@ -31,7 +31,7 @@ class GetPosts {
 			const $postsList = rootEl.querySelector(".posts ul");
 
 			for (const file of files) {
-				await fetch("http://localhost:3000/view/" + file)
+				await fetch("/view/" + file)
 					.then(function (response) {
 						return response.text();
 					})

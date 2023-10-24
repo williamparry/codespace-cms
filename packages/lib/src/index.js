@@ -27,7 +27,7 @@ module.exports.cms = (argv) => {
 	app.use(
 		expressCspHeader({
 			directives: {
-				"script-src": [NONCE],
+				"script-src": [NONCE, 'https://cdnjs.cloudflare.com'], // TODO: Make sources configurable?
 			},
 		})
 	);
@@ -39,7 +39,7 @@ module.exports.cms = (argv) => {
 		return;
 	}
 
-	if (!argv.outputRoot) {
+	if (argv.generate && !argv.outputRoot) {
 		console.log(`Output root "${outputRoot}" not passed in (--outputRoot=)`);
 		return;
 	}
@@ -60,14 +60,20 @@ module.exports.cms = (argv) => {
 		} catch (ex) {
 			console.log(ex);
 		}
-	} else {
-		console.log("Running without basic auth (--users=)");
 	}
+
+	const AuthTypes = {
+		basic: "Basic Auth",
+		codespace: "Codespace Auth",
+		none: "No Auth"
+	}
+
+	const authType = argv.intest ? AuthTypes.basic : (basicAuthUsers && !process.env.CODESPACES) ? AuthTypes.basic : process.env.CODESPACES ? AuthTypes.codespace : AuthTypes.none;
 
 	const CWD = process.cwd();
 
 	const BASE_DIR = path.join(CWD, argv.siteRoot);
-	const DIST_DIR = path.join(CWD, argv.outputRoot);
+	const DIST_DIR = argv.outputRoot ? path.join(CWD, argv.outputRoot) : "Not defined";
 
 	if (!fs.existsSync(BASE_DIR)) {
 		console.log(`Source directory "${BASE_DIR}" does not exist`);
@@ -241,6 +247,15 @@ module.exports.cms = (argv) => {
 		return $.html();
 	};
 
+	app.get("/", (_req, res) => {
+		const allPages = getPagesList();
+		if(allPages.indexOf("index.html") !== -1) {
+			res.redirect(302, "/cms/index.html");
+		} else {
+			res.send("<pre>No index.html file found at the root of content-pages. Go to /cms/{page}</pre>")
+		}
+	});
+
 	app.get(
 		["/cms/:relativeFilePath.html", "/cms/:relativeDirPath(*/):relativeFilePath.html"],
 		csrfProtection,
@@ -296,13 +311,19 @@ module.exports.cms = (argv) => {
 				$el.remove();
 			});
 
-			savePageHTML(
-				req.relativeFilePath,
-				// Cheerio adds <head></head> unless using _useHtmlParser2
-				// https://github.com/cheeriojs/cheerio/issues/1031
-				prettier.format($.html(), { ...prettierOptions, parser: "html" })
-			);
-			res.status(200).send("OK");
+			// Cheerio adds <head></head> unless using _useHtmlParser2
+			// https://github.com/cheeriojs/cheerio/issues/1031
+			prettier.format($.html(), { ...prettierOptions, parser: "html" }).then(pageHTML => {
+				savePageHTML(
+					req.relativeFilePath,
+					pageHTML
+				);
+				res.status(200).send("OK");
+			}).catch(e => {
+				res.status(500)
+			})
+
+			
 		}
 	);
 
@@ -316,16 +337,19 @@ module.exports.cms = (argv) => {
 			});
 			const pagesList = getPagesList();
 			const siteAssets = getSiteAssets();
-			res.render("view", {
-				nonce: req.nonce,
-				pageHTML: prettier.format(addNonceToHTMLScriptElements(req.pageHTML, req.nonce), {
-					...prettierOptions,
-					parser: "html",
-				}),
-				pagesList,
-				components,
-				siteAssets,
-			});
+			prettier.format(addNonceToHTMLScriptElements(req.pageHTML, req.nonce), {
+				...prettierOptions,
+				parser: "html",
+			}).then(pageHTML => {
+				res.render("view", {
+					nonce: req.nonce,
+					pageHTML,
+					pagesList,
+					components,
+					siteAssets,
+				});
+			})
+			
 		}
 	);
 
@@ -333,14 +357,16 @@ module.exports.cms = (argv) => {
 		if (err.code !== "EBADCSRFTOKEN") return next(err);
 		res.sendStatus(403);
 	});
-
+	
 	app.listen(port, async () => {
 		console.table({
 			BASE_DIR,
-			DIST_DIR,
 			SITE_ASSETS_DIR,
-			"Auth": process.env.CODESPACES ? "Codespace" : !!basicAuthUsers ? "Basic Auth" : "Nnone",
-			"Server running at": `http://localhost:${port}`,
+			DIST_DIR,
+			"Auth Type": authType,
+			"Server running at": process.env.CODESPACES ? `https://${process.env.CODESPACE_NAME}-${port}.app.github.dev/` : `http://localhost:${port}`,
+			"Generate Mode": argv.generate ? "Yes" : "No",
+			"Test Mode": argv.intest ? "Yes" : "No",
 		});
 
 		if (argv.generate) {
@@ -354,7 +380,7 @@ module.exports.cms = (argv) => {
 				});
 				const page = await browser.newPage();
 
-				if (basicAuthUsers && !process.env.CODESPACES) {
+				if (authType == AuthTypes.basic) {
 					const basicAuthUserKeys = Object.keys(basicAuthUsers);
 					await page.authenticate({
 						username: basicAuthUserKeys[0],

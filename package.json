@@ -1,31 +1,35 @@
 {
-  "name": "node-static-cms-workspace",
+  "name": "codespace-cms-root",
   "version": "1.0.0",
-  "description": "node-static-cms workspace",
+  "description": "codespace-cms-root",
   "private": true,
   "workspaces": [
     "packages/lib",
     "packages/test"
   ],
   "scripts": {
-    "dev": "nodemon packages/lib/src/index.js --siteRoot=example-site --outputRoot=dist",
-    "dev:generate": "node packages/lib/src/index.js --port=3001 --siteRoot=example-site --outputRoot=dist --generate",
+    "dev": "nodemon packages/lib/src/index.js --siteRoot=codespace-cms-website",
+    "dev:generate": "node packages/lib/src/index.js --port=3001 --siteRoot=codespace-cms-website --outputRoot=dist --generate",
     "dev:distserver": "cd dist && http-server",
+    "test:example": "nodemon packages/lib/src/index.js --siteRoot=packages/test/example-site --outputRoot=dist",
     "test": "cd packages/test && node test.js",
-    "package": "cd packages/lib && npm pack"
+    "package": "cd packages/lib && npm pack",
+    "update": "ncu -u --workspaces"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/williamparry/node-static-cms.git"
+    "url": "git+https://github.com/williamparry/codespace-cms.git"
   },
   "author": "William Parry",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/williamparry/node-static-cms/issues"
+    "url": "https://github.com/williamparry/codespace-cms/issues"
   },
-  "homepage": "https://github.com/williamparry/node-static-cms#readme",
+  "homepage": "https://github.com/williamparry/codespace-cms#readme",
   "dependencies": {
     "http-server": "^14.1.1",
-    "nodemon": "^2.0.21"
+    "nodemon": "^3.0.1",
+    "npm-check-updates": "^16.14.6",
+    "prettier": "^3.0.3"
   }
 }

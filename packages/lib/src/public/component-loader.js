@@ -85,9 +85,7 @@ window.customElements.define(
 			};
 			// TODO: Move into CSS file
 			this.dialogEl.style.maxHeight = "80vh";
-			this.dialogEl.style.transform = "translateY(-50%)";
 			this.dialogEl.style.position = "fixed";
-			this.dialogEl.style.top = "50%";
 			this.dialogEl.style.overflowY = "auto";
 		}
 

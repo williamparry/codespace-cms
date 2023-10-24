@@ -1,8 +1,16 @@
-const { exec, execSync, spawnSync } = require("child_process");
-const puppeteer = require("puppeteer");
-const chalk = require("chalk");
-const axios = require("axios");
-const { checkFilePath } = require("../lib/src/index");
+import { exec, execSync, spawnSync } from "node:child_process";
+import { launch } from "puppeteer";
+import chalk from "chalk";
+import axios from "axios";
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+//const checkFilePath = require("../lib/src/index.js");
+// TODO: Fix ESM/CJS later
+const checkFilePath = (filePath) => {
+	return !(!filePath || filePath.includes("..") || !filePath.endsWith(".html"));
+};
 
 let child;
 
@@ -11,18 +19,18 @@ const password = "nodestaticcms";
 
 const npmLinkResult = execSync("npm ls -g --depth=0 --link=true").toString();
 
-if(!npmLinkResult.includes("node-static-cms")) {
-  console.log("node-static-cms not linked");
+if(!npmLinkResult.includes("codespace-cms")) {
+  console.log("codespace-cms not linked");
   execSync("cd ../lib && npm link")
   console.log("Linked")
 }
 
 const run = () => {
   console.log("Run test bin", __dirname);
-
+  
   return new Promise((resolve, reject) => {
     child = exec(
-      `node-static-cms --siteRoot=example-site --outputRoot=dist --users.${username}=${password} --intest`,
+      `codespace-cms --siteRoot=example-site --outputRoot=dist --users.${username}=${password} --intest --port=3001`,
       {
         cwd: __dirname,
       },
@@ -159,7 +167,12 @@ const run = () => {
         await Promise.all(
           tests.map(async (test) => {
             if (test.puppeteer) {
-              const browser = await puppeteer.launch();
+              const browser = await launch({
+                args: [
+                  '--no-sandbox',
+                  '--disable-setuid-sandbox'
+                ]
+              });
               const page = await browser.newPage();
               if (test.auth) {
                 await page.authenticate({
@@ -201,22 +214,18 @@ const run = () => {
   });
 };
 
-(async function () {
-  let testsPassed = false;
-  try {
-    await run();
-    testsPassed = true;
-  } catch (ex) {}
+let testsPassed = false;
+try {
+  await run();
+  testsPassed = true;
+} catch (ex) {}
 
-  if (process.platform !== "win32") {
-    child.kill();
-  } else {
-    spawnSync("taskkill", ["/pid", child.pid, "/f", "/t"]);
-  }
+if (process.platform !== "win32") {
+  child.kill();
+} else {
+  spawnSync("taskkill", ["/pid", child.pid, "/f", "/t"]);
+}
 
-  const exitCode = testsPassed ? 0 : 1;
+const exitCode = testsPassed ? 0 : 1;
 
-  process.exit(exitCode)
-})();
-
-
+process.exit(exitCode)
