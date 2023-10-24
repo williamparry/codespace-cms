@@ -18,10 +18,7 @@ You can commit and push the files it changes from VS Code.
 
 ## Generating the dist
 
-For GitHub pages put this in as the command:
-
-    sudo apt update && sudo apt-get install chromium -y
-    npx @williamparry/codespace-cms --siteRoot=(example-site) --outputRoot=(dist) --generate
+For GitHub pages use this [workflow](.github/workflows/main.yml).
 
 To run in your devcontainer, amend your `.devcontainer.json` file:
 
