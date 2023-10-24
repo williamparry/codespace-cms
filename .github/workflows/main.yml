@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build Docs Website
 
 # Controls when the workflow will run
 on:
@@ -27,7 +27,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v1
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Generate
         run: |
           sudo apt update && sudo apt install chromium-browser -y && npm install
-          npm run dev --siteRoot=codespace-cms-website --outputRoot=docs --generate
+          node packages/lib/src/index.js --port=3001 --siteRoot=codespace-cms-website --outputRoot=docs --generate
