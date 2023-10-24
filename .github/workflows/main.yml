@@ -40,8 +40,8 @@ jobs:
       - name: Generate
         run: |
           sudo apt update && sudo apt install chromium-browser -y && npm install
-          node packages/lib/src/index.js --port=3001 --siteRoot=codespace-cms-website --outputRoot=dist --generate
-          tar -czvf github-pages.tgz -C dist .
+          node packages/lib/src/index.js --port=3001 --siteRoot=codespace-cms-website --outputRoot=_site --generate
+          # tar -czvf github-pages.tgz -C dist .
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
       - name: Deploy to GitHub Pages
