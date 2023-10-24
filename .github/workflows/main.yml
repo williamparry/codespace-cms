@@ -24,10 +24,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - uses: browser-actions/setup-chrome@v1
 
       # Runs a set of commands using the runners shell
       - name: Generate
         run: |
           sudo apt update && sudo apt install chromium-browser -y && npm install
-          node packages/lib/src/index.js --port=3001 --siteRoot=codespace-cms-website --outputRoot=docs --generate
+          node packages/lib/src/index.js --port=3001 --siteRoot=codespace-cms-website --outputRoot=docs --s --generate
